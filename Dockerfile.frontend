@@ -11,15 +11,15 @@ WORKDIR /app
 RUN echo "cachebust: ${CACHEBUST}" && \
     git clone --branch ${FRONTEND_BRANCH} --depth 1 ${FRONTEND_REPO} .
 
-RUN yarn install --frozen-lockfile
+RUN corepack enable && corepack prepare --activate
+
+RUN yarn install --immutable || yarn install
+
 RUN yarn build:prod
 
 FROM node:18-alpine
 
 WORKDIR /app
-
-RUN corepack enable
-RUN corepack prepare yarn@stable --activate
 
 COPY --from=build /app/dist ./dist
 COPY --from=build /app/package.json ./package.json
