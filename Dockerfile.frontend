@@ -8,6 +8,7 @@ RUN apk add --no-cache git python3 make g++
 
 WORKDIR /app
 
+ARG CACHE_BUST=1
 RUN echo "cachebust: ${CACHEBUST}" && \
     git clone --branch ${FRONTEND_BRANCH} --depth 1 ${FRONTEND_REPO} .
 
