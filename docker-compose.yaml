@@ -63,6 +63,20 @@ services:
       - dspacenet
     restart: unless-stopped
 
+  nginx:
+    image: nginx:alpine
+    container_name: dspace-nginx
+    depends_on:
+      - dspace-backend
+      - dspace-frontend
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    ports:
+      - "80:80"
+    networks:
+      - dspacenet
+    restart: unless-stopped
+
 networks:
   dspacenet:
 
