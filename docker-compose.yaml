@@ -47,7 +47,7 @@ services:
       context: .
       dockerfile: Dockerfile.frontend
       args:
-        FRONTEND_REPO: https://github.com/USERNAME/dspace-angular-custom.git
+        FRONTEND_REPO: https://github.com/STIKOM-TB-STUDENT-UNOFFICIAL/dspace-angular.git
         FRONTEND_BRANCH: main
     container_name: dspace-frontend
     depends_on:
