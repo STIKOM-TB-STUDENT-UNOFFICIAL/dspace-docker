@@ -11,9 +11,8 @@ services:
     networks:
       - dspacenet
     restart: unless-stopped
-
-  ports:
-    - "5432:5432"
+    ports:
+      - "5432:5432"
 
   dspacesolr:
     image: dspace/dspace-solr:latest
