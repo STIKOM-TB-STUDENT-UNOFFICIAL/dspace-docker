@@ -11,6 +11,8 @@ WORKDIR /app
 RUN echo "cachebust: ${CACHEBUST}" && \
     git clone --branch ${FRONTEND_BRANCH} --depth 1 ${FRONTEND_REPO} .
 
+ENV NODE_OPTIONS="--max-old-space-size=8192"
+
 RUN corepack enable
 RUN npm ci || npm install
 RUN npm run build:prod
