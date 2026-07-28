@@ -1,0 +1,1 @@
+docker exec -it dspace-backend /dspace/bin/dspace create-administrator
