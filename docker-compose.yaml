@@ -39,7 +39,8 @@ services:
       db__P__username: dspace
       db__P__password: dspace
       solr__P__server__P__url: http://dspacesolr:8983/solr
-
+    ports:
+      - "8080:8080"
     volumes:
       - dspace_assetstore:/dspace/assetstore
     networks:
@@ -61,7 +62,8 @@ services:
       DSPACE_REST_HOST: dspace-backend
       DSPACE_REST_PORT: 8080
       DSPACE_REST_NAMESPACE: /server
-
+    ports:
+      - "4000:4000"
     networks:
       - dspacenet
     restart: unless-stopped
