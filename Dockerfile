@@ -1,0 +1,26 @@
+FROM node:18-alpine AS build
+
+ARG FRONTEND_REPO
+ARG FRONTEND_BRANCH=main
+
+RUN apk add --no-cache git python3 make g++
+
+WORKDIR /app
+
+RUN git clone --branch ${FRONTEND_BRANCH} --depth 1 ${FRONTEND_REPO} .
+
+RUN yarn install --frozen-lockfile
+RUN yarn build:prod
+
+FROM node:18-alpine
+
+WORKDIR /app
+
+COPY --from=build /app/dist ./dist
+COPY --from=build /app/package.json ./package.json
+COPY --from=build /app/node_modules ./node_modules
+
+ENV NODE_ENV=production
+EXPOSE 4000
+
+CMD ["node", "dist/server/main.js"]

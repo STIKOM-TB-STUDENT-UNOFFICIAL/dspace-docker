@@ -1,0 +1,72 @@
+version: "3.8"
+
+services:
+  dspacedb:
+    image: dspace/dspace-postgres-pgcrypto:latest
+    container_name: dspacedb
+    environment:
+      PGDATA: /pgdata
+    volumes:
+      - dspace_pgdata:/pgdata
+    networks:
+      - dspacenet
+    restart: unless-stopped
+
+  dspacesolr:
+    image: dspace/dspace-solr:latest
+    container_name: dspacesolr
+    volumes:
+      - dspace_solr:/var/solr/data
+    networks:
+      - dspacenet
+    restart: unless-stopped
+
+  dspace-backend:
+    image: dspace/dspace:latest
+    container_name: dspace-backend
+    depends_on:
+      - dspacedb
+      - dspacesolr
+    environment:
+      dspace__P__server__P__url: http://localhost:8080/server
+      dspace__P__ui__P__url: http://localhost:4000
+      db__P__url: jdbc:postgresql://dspacedb:5432/dspace
+      db__P__username: dspace
+      db__P__password: dspace
+      solr__P__server__P__url: http://dspacesolr:8983/solr
+    ports:
+      - "8080:8080"
+    volumes:
+      - dspace_assetstore:/dspace/assetstore
+    networks:
+      - dspacenet
+    restart: unless-stopped
+
+  dspace-frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+      args:
+        FRONTEND_REPO: https://github.com/USERNAME/dspace-angular-custom.git
+        FRONTEND_BRANCH: main
+    container_name: dspace-frontend
+    depends_on:
+      - dspace-backend
+    environment:
+      DSPACE_REST_SSL: "false"
+      DSPACE_REST_HOST: dspace-backend
+      DSPACE_REST_PORT: 8080
+      DSPACE_REST_NAMESPACE: /server
+    ports:
+      - "4000:4000"
+    networks:
+      - dspacenet
+    restart: unless-stopped
+
+networks:
+  dspacenet:
+
+volumes:
+  dspace_pgdata:
+  dspace_solr:
+  dspace_assetstore:
