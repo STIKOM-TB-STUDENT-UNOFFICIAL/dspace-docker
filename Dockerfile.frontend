@@ -2,7 +2,6 @@ FROM node:18-alpine AS build
 
 ARG FRONTEND_REPO
 ARG FRONTEND_BRANCH=main
-
 ARG CACHEBUST=manual
 
 RUN apk add --no-cache git python3 make g++
