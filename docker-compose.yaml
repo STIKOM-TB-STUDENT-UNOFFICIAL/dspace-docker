@@ -6,6 +6,9 @@ services:
     container_name: dspacedb
     environment:
       PGDATA: /pgdata
+      POSTGRES_DB: dspace
+      POSTGRES_USER: dspace
+      POSTGRES_PASSWORD: dspace
     volumes:
       - dspace_pgdata:/pgdata
     networks:
