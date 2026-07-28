@@ -20,7 +20,7 @@ Setup DSpace dengan backend official image, frontend custom (build dari repo Git
 | `dspacesolr` | Solr — search index & statistics |
 | `dspace-backend` | REST API DSpace (image resmi, tidak dikustom) |
 | `dspace-frontend` | Angular SSR — di-build dari repo custom kamu |
-| `nginx` | Reverse proxy — satu pintu masuk (`http://localhost`) untuk backend + frontend |
+| `nginx` | Reverse proxy — satu pintu masuk (`http://localhost:8081`) untuk backend + frontend |
 
 ## Menjalankan
 
@@ -29,8 +29,8 @@ docker compose up -d --build
 ```
 
 Akses:
-- Frontend: `http://localhost`
-- Backend REST API: `http://localhost/server`
+- Frontend: `http://localhost:8081`
+- Backend REST API: `http://localhost:8081/server`
 
 ## Update frontend saat repo GitHub berubah
 
@@ -96,7 +96,7 @@ Keterangan flag:
 ### 2. Lewat UI Admin
 
 Kalau sudah ada 1 akun admin, user baru juga bisa ditambahkan lewat:
-`http://localhost/access-control/epeople` → *Add EPerson*
+`http://localhost:8081/access-control/epeople` → *Add EPerson*
 
 > Menambahkan role admin ke e-person tertentu bisa dilakukan lewat halaman **Groups** di UI yang sama (masukkan e-person ke grup `Administrator`).
 
