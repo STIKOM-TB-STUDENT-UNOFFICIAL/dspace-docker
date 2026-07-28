@@ -12,7 +12,7 @@ services:
       - dspacenet
     restart: unless-stopped
     ports:
-      - "5432:5432"
+      - "${DB_PORT:-5432}:5432"
 
   dspacesolr:
     image: dspace/dspace-solr:latest
