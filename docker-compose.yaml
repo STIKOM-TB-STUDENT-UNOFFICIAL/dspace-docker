@@ -27,7 +27,7 @@ services:
     restart: unless-stopped
 
   dspace-backend:
-    image: dspace/dspace:dspace-10.0
+    image: dspace/dspace:dspace-9.3
     container_name: dspace-backend
     depends_on:
       - dspacedb
