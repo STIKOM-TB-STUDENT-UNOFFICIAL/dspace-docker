@@ -1,10 +1,15 @@
 #!/bin/bash
 set -e
 
-PROJECT_PREFIX="d10"
+# Load environment variables jika file .env ada
+if [ -f .env ]; then
+  export $(grep -v '^#' .env | xargs)
+fi
+
+PROJECT_PREFIX="${COMPOSE_PROJECT_NAME:-d10}"
 DB_CONTAINER="dspacedb"
-DB_USER="dspace"
-DB_NAME="dspace"
+DB_USER="${POSTGRES_USER:-dspace}"
+DB_NAME="${POSTGRES_DB:-dspace}"
 
 if [ -z "$1" ]; then
   echo "Cara pakai: ./restore.sh <folder_backup>"
@@ -19,7 +24,7 @@ if [ ! -d "$BACKUP_DIR" ]; then
   exit 1
 fi
 
-echo ">> Restore dari: $BACKUP_DIR"
+echo ">> Restore dari: $BACKUP_DIR (Project Prefix: $PROJECT_PREFIX)"
 read -p ">> Ini akan MENIMPA data yang ada sekarang. Lanjut? (y/n) " confirm
 if [ "$confirm" != "y" ]; then
   echo "Dibatalkan."
@@ -55,4 +60,4 @@ else
 fi
 
 echo ">> Restore selesai. Restart container backend/solr agar perubahan terbaca:"
-echo "   docker compose -p d10 restart dspace dspacesolr"
+echo "   docker compose restart dspace dspacesolr"

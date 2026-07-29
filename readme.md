@@ -2,6 +2,8 @@
 
 Setup repository ini dibangun sepenuhnya berdasarkan **[Dokumentasi Resmi DSpace 10 Docker (LYRASIS Wiki)](https://wiki.lyrasis.org/spaces/DSPACE/pages/425331100/Try+out+DSpace+10#TryoutDSpace10-InstallviaDocker)** dan diperkaya dengan **Nginx Reverse Proxy** untuk memudahkan akses domain tunggal (misal `http://localhost` atau `https://repository.univ.ac.id`).
 
+📘 **[Baca Panduan Penggunaan DSpace 10 (panduan.md)](panduan.md)** untuk alur pembuatan Komunitas, Koleksi, Pengunggahan Dokumen, dan Manajemen User.
+
 ---
 
 ## 🏗️ Arsitektur Sistem

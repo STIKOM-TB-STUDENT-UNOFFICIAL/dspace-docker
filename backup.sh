@@ -1,15 +1,20 @@
 #!/bin/bash
 set -e
 
-PROJECT_PREFIX="d10"
+# Load environment variables jika file .env ada
+if [ -f .env ]; then
+  export $(grep -v '^#' .env | xargs)
+fi
+
+PROJECT_PREFIX="${COMPOSE_PROJECT_NAME:-d10}"
 DB_CONTAINER="dspacedb"
-DB_USER="dspace"
-DB_NAME="dspace"
+DB_USER="${POSTGRES_USER:-dspace}"
+DB_NAME="${POSTGRES_DB:-dspace}"
 
 BACKUP_DIR="./backup/$(date +%Y%m%d_%H%M%S)"
 mkdir -p "$BACKUP_DIR"
 
-echo ">> Backup ke: $BACKUP_DIR"
+echo ">> Backup ke: $BACKUP_DIR (Project Prefix: $PROJECT_PREFIX)"
 
 echo ">> Dumping database..."
 docker exec "$DB_CONTAINER" pg_dump -U "$DB_USER" "$DB_NAME" > "$BACKUP_DIR/dspace.sql"
