@@ -10,7 +10,7 @@ Seluruh service menggunakan image resmi DSpace 10:
 
 | Service | Container Name | Fungsi | Akses Direct / Port Host |
 |---|---|---|---|
-| `dspace-nginx` | `dspace-nginx` | Reverse proxy utama (pintu masuk port 80) | `http://localhost` |
+| `dspace-nginx` | `dspace-nginx` | Reverse proxy utama (pintu masuk port 80/custom) | `http://localhost:${NGINX_HOST_PORT:-80}` |
 | `dspace-angular` | `dspace-angular` | Frontend User Interface (Angular SSR) | `http://localhost:4000` |
 | `dspace` | `dspace` | Backend REST API | `http://localhost:8080/server` |
 | `dspacedb` | `dspacedb` | PostgreSQL 15 database | `localhost:${DB_HOST_PORT:-5431}` |
@@ -21,8 +21,8 @@ Seluruh service menggunakan image resmi DSpace 10:
 ## 🌐 Akses Pintu Masuk Satu Domain
 
 Dengan Nginx Reverse Proxy:
-- **Frontend UI**: `http://localhost/` (Routing otomatis ke container UI)
-- **Backend REST API**: `http://localhost/server/` (Routing otomatis ke REST API)
+- **Frontend UI**: `http://localhost:${NGINX_HOST_PORT}/` (Routing otomatis ke container UI)
+- **Backend REST API**: `http://localhost:${NGINX_HOST_PORT}/server/` (Routing otomatis ke REST API)
 
 ---
 
@@ -101,16 +101,22 @@ Jika Anda menggunakan **repository Angular UI kustom** (misal hasil modifikasi t
 
 ---
 
-## 🔧 Pengaturan Custom Domain Produksi (`repository.univ.ac.id`)
+## 🔧 Pengaturan Port & Custom Domain Produksi (`repository.univ.ac.id`)
 
-Jika ingin menyebar ke domain kampus / produksi:
+Jika port `80` di server sudah digunakan webserver lain (misal Apache / Nginx bawaan server):
 
-1. Edit file `.env` dan ganti `localhost` dengan domain produksi Anda:
+1. Edit file `.env` dan ganti `NGINX_HOST_PORT` ke port lain (misal `8081`):
    ```env
-   DSPACE_SERVER_URL=http://repository.univ.ac.id/server
-   DSPACE_UI_URL=http://repository.univ.ac.id
+   # Port Nginx yang diexpose ke server host
+   NGINX_HOST_PORT=8081
+
+   # Jika menggunakan port kustom (misal 8081):
+   DSPACE_SERVER_URL=http://repository.univ.ac.id:8081/server
+   DSPACE_UI_URL=http://repository.univ.ac.id:8081
    DSPACE_UI_HOST=repository.univ.ac.id
    DSPACE_REST_HOST=repository.univ.ac.id
+   DSPACE_UI_PORT=8081
+   DSPACE_REST_PORT=8081
    ```
 2. Restart container:
    ```bash
