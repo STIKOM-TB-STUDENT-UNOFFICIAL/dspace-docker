@@ -64,6 +64,8 @@ Semua perintah dijalankan di terminal server pada direktori `dspace-docker`:
 | Menjalankan DSpace | `docker compose up -d` |
 | Menghentikan DSpace | `docker compose down` |
 | Merestart DSpace | `./restart.sh` atau `docker compose restart` |
+| Reset & Migrasi Ulang Database | `./reset-db.sh` |
+| Factory Reset Total (Clean Install) | `./factory-reset.sh` |
 | Melihat Log Backend/Nginx | `docker compose logs -f` |
 
 ### 👤 Membuat Akun Administrator (EPerson)
