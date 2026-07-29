@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   dspacedb:
-    image: dspace/dspace-postgres-pgcrypto:latest
+    image: dspace/dspace-postgres-pgcrypto:dspace-9.3
     container_name: dspacedb
     environment:
       PGDATA: /pgdata
@@ -18,7 +18,7 @@ services:
       - "${DB_PORT:-5432}:5432"
 
   dspacesolr:
-    image: dspace/dspace-solr:latest
+    image: dspace/dspace-solr:dspace-9.3
     container_name: dspacesolr
     volumes:
       - dspace_solr:/var/solr/data
