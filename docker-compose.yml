@@ -22,6 +22,15 @@ services:
       dspace__P__server__P__url: ${DSPACE_SERVER_URL:-http://localhost/server}
       dspace__P__ui__P__url: ${DSPACE_UI_URL:-http://localhost}
       dspace__P__server__P__ssr__P__url: http://dspace:8080/server
+      # SMTP Email Configurations
+      dspace__P__mail__P__server: ${SMTP_HOST:-smtp.gmail.com}
+      dspace__P__mail__P__server__P__port: ${SMTP_PORT:-587}
+      dspace__P__mail__P__server__P__username: ${SMTP_USER:-}
+      dspace__P__mail__P__server__P__password: ${SMTP_PASS:-}
+      dspace__P__mail__P__server__P__disabled: ${SMTP_DISABLED:-true}
+      dspace__P__mail__P__from__P__address: ${SMTP_FROM_ADDRESS:-noreply@repository.azumidev.web.id}
+      dspace__P__mail__P__feedback__P__recipient: ${SMTP_FEEDBACK_RECIPIENT:-admin@repository.azumidev.web.id}
+      dspace__P__mail__P__admin: ${SMTP_ADMIN_EMAIL:-admin@repository.azumidev.web.id}
     volumes:
       - ./config/local.cfg:/dspace/config/local.cfg
 
