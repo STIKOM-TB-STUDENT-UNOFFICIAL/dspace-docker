@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-PROJECT_PREFIX="dspace-docker"
+PROJECT_PREFIX="d10"
 DB_CONTAINER="dspacedb"
 DB_USER="dspace"
 DB_NAME="dspace"
@@ -16,13 +16,13 @@ docker exec "$DB_CONTAINER" pg_dump -U "$DB_USER" "$DB_NAME" > "$BACKUP_DIR/dspa
 
 echo ">> Backup Solr volume..."
 docker run --rm \
-  -v "${PROJECT_PREFIX}_dspace_solr":/data \
+  -v "${PROJECT_PREFIX}_solr_data":/data \
   -v "$(pwd)/$BACKUP_DIR":/backup \
   alpine tar czf /backup/solr.tar.gz -C /data .
 
 echo ">> Backup Assetstore volume..."
 docker run --rm \
-  -v "${PROJECT_PREFIX}_dspace_assetstore":/data \
+  -v "${PROJECT_PREFIX}_assetstore":/data \
   -v "$(pwd)/$BACKUP_DIR":/backup \
   alpine tar czf /backup/assetstore.tar.gz -C /data .
 

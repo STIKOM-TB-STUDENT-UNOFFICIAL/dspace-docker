@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-PROJECT_PREFIX="dspace-docker"
+PROJECT_PREFIX="d10"
 DB_CONTAINER="dspacedb"
 DB_USER="dspace"
 DB_NAME="dspace"
@@ -37,7 +37,7 @@ fi
 if [ -f "$BACKUP_DIR/solr.tar.gz" ]; then
   echo ">> Restore Solr volume..."
   docker run --rm \
-    -v "${PROJECT_PREFIX}_dspace_solr":/data \
+    -v "${PROJECT_PREFIX}_solr_data":/data \
     -v "$(pwd)/$BACKUP_DIR":/backup \
     alpine sh -c "rm -rf /data/* && tar xzf /backup/solr.tar.gz -C /data"
 else
@@ -47,7 +47,7 @@ fi
 if [ -f "$BACKUP_DIR/assetstore.tar.gz" ]; then
   echo ">> Restore Assetstore volume..."
   docker run --rm \
-    -v "${PROJECT_PREFIX}_dspace_assetstore":/data \
+    -v "${PROJECT_PREFIX}_assetstore":/data \
     -v "$(pwd)/$BACKUP_DIR":/backup \
     alpine sh -c "rm -rf /data/* && tar xzf /backup/assetstore.tar.gz -C /data"
 else
@@ -55,4 +55,4 @@ else
 fi
 
 echo ">> Restore selesai. Restart container backend/solr agar perubahan terbaca:"
-echo "   docker compose restart dspace-backend dspacesolr"
+echo "   docker compose -p d10 restart dspace dspacesolr"
