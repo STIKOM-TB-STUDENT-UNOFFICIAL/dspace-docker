@@ -22,11 +22,9 @@ services:
 
   dspacesolr:
     restart: unless-stopped
-    image: ${DSPACE_SOLR_IMAGE:-dspace/dspace-solr:dspace-10.0}
 
   dspace:
     restart: unless-stopped
-    image: ${DSPACE_IMAGE:-dspace/dspace:dspace-10.0}
     environment:
       dspace__P__server__P__url: ${DSPACE_SERVER_URL:-http://localhost/server}
       dspace__P__ui__P__url: ${DSPACE_UI_URL:-http://localhost}
