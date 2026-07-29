@@ -1,7 +1,7 @@
 FROM node:20-alpine AS build
 
 ARG FRONTEND_REPO=https://github.com/DSpace/dspace-angular.git
-ARG FRONTEND_BRANCH=main
+ARG FRONTEND_BRANCH=dspace-9.x
 ARG CACHE_BUST=1
 
 RUN apk add --no-cache git python3 make g++

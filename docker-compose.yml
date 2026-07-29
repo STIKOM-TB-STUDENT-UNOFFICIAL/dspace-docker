@@ -26,7 +26,7 @@ services:
       - ./config/local.cfg:/dspace/config/local.cfg
 
   dspace-angular:
-    image: ${DSPACE_UI_IMAGE:-dspace/dspace-angular:latest-dist}
+    image: ${DSPACE_UI_IMAGE:-dspace/dspace-angular:dspace-9.3-dist}
     build:
       context: .
       dockerfile: Dockerfile.frontend
