@@ -32,9 +32,13 @@ services:
         FRONTEND_REPO: ${FRONTEND_REPO:-https://github.com/DSpace/dspace-angular.git}
         FRONTEND_BRANCH: ${FRONTEND_BRANCH:-main}
     environment:
+      PORT: 4000
+      DSPACE_UI_SSL: ${DSPACE_UI_SSL:-false}
       DSPACE_UI_HOST: ${DSPACE_UI_HOST:-localhost}
       DSPACE_UI_PORT: ${DSPACE_UI_PORT:-80}
+      DSPACE_UI_NAMESPACE: /
       DSPACE_UI_BASEURL: ${DSPACE_UI_URL:-http://localhost}
+      DSPACE_REST_SSL: ${DSPACE_REST_SSL:-false}
       DSPACE_REST_HOST: ${DSPACE_REST_HOST:-localhost}
       DSPACE_REST_PORT: ${DSPACE_REST_PORT:-80}
       DSPACE_REST_NAMESPACE: /server
