@@ -87,24 +87,38 @@ Untuk menguji fitur DSpace 10 dengan data awal (komunitas, koleksi, dan item sam
 
 Jika ingin menyebar ke domain kampus / produksi:
 
-1. Buka file `docker-compose.override.yml` atau set Environment Variable di server:
-   ```yaml
-   dspace:
-     environment:
-       dspace__P__server__P__url: http://repository.univ.ac.id/server
-       dspace__P__ui__P__url: http://repository.univ.ac.id
-
-   dspace-angular:
-     environment:
-       DSPACE_UI_HOST: repository.univ.ac.id
-       DSPACE_UI_BASEURL: http://repository.univ.ac.id
-       DSPACE_REST_HOST: repository.univ.ac.id
-       DSPACE_REST_BASEURL: http://repository.univ.ac.id/server
+1. Salin file `.env.example` menjadi `.env`:
+   ```bash
+   cp .env.example .env
    ```
-2. Restart container:
+2. Edit file `.env` dan ganti `localhost` dengan domain produksi Anda:
+   ```env
+   DSPACE_SERVER_URL=http://repository.univ.ac.id/server
+   DSPACE_UI_URL=http://repository.univ.ac.id
+   DSPACE_UI_HOST=repository.univ.ac.id
+   DSPACE_REST_HOST=repository.univ.ac.id
+   ```
+3. Restart container:
    ```bash
    docker compose up -d
    ```
+
+---
+
+## 🎨 Menggunakan Custom Frontend UI Repository
+
+Jika Anda menggunakan **repository Angular UI kustom** (misal hasil modifikasi tema/layout sendiri di GitHub):
+
+1. Buka file `.env` dan atur URL repository serta branch custom Anda:
+   ```env
+   FRONTEND_REPO=https://github.com/USERNAME/custom-dspace-angular.git
+   FRONTEND_BRANCH=main
+   ```
+2. Build dan jalankan ulang container UI dengan script bantuan:
+   ```bash
+   ./rebuild-frontend.sh
+   ```
+   *Script ini akan melakukan re-clone commit terbaru dari repo custom Anda dan membangun ulang image Angular UI.*
 
 ---
 

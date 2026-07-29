@@ -1,0 +1,32 @@
+FROM node:20-alpine AS build
+
+ARG FRONTEND_REPO=https://github.com/DSpace/dspace-angular.git
+ARG FRONTEND_BRANCH=main
+ARG CACHE_BUST=1
+
+RUN apk add --no-cache git python3 make g++
+
+WORKDIR /app
+
+RUN echo "Cache bust: ${CACHE_BUST}" && \
+    git clone --branch ${FRONTEND_BRANCH} --depth 1 ${FRONTEND_REPO} .
+
+ENV NODE_OPTIONS="--max-old-space-size=8192"
+
+RUN corepack enable
+RUN npm ci || npm install
+RUN npm run build:prod
+
+FROM node:20-alpine
+
+WORKDIR /app
+
+COPY --from=build /app/dist ./dist
+COPY --from=build /app/package.json ./package.json
+COPY --from=build /app/node_modules ./node_modules
+COPY --from=build /app/config ./config
+
+ENV NODE_ENV=production
+EXPOSE 4000
+
+CMD ["node", "dist/server/main.js"]
