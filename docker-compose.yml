@@ -34,7 +34,7 @@ services:
 
   dspace-angular:
     restart: unless-stopped
-    image: ${DSPACE_UI_IMAGE:-dspace/dspace-angular:dspace-10.0-test-dist}
+    image: ${DSPACE_UI_IMAGE:-dspace/dspace-angular:dspace-10.0-dist}
     build:
       context: .
       dockerfile: Dockerfile.frontend
