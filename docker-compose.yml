@@ -2,10 +2,6 @@ include:
   - docker/docker-compose-dist.yml
   - docker/docker-compose-rest.yml
 
-networks:
-  dspacenet:
-    external: false
-
 services:
   nginx:
     image: nginx:alpine
@@ -20,10 +16,6 @@ services:
       - dspace-angular
     networks:
       - dspacenet
-
-  dspacedb:
-    ports:
-      - "${DB_HOST_PORT:-5431}:5432"
 
   dspace:
     environment:

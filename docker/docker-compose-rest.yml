@@ -83,7 +83,7 @@ services:
     networks:
       - dspacenet
     ports:
-    - published: 5432
+    - published: ${DB_HOST_PORT:-5431}
       target: 5432
     volumes:
     # Keep Postgres data directory between reboots
