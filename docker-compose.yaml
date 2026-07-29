@@ -2,7 +2,7 @@ version: "3.9"
 
 services:
   dspacedb:
-    image: dspace/dspace-postgres-pgcrypto:dspace-9.3
+    image: dspace/dspace-postgres-pgcrypto:dspace-latest
     container_name: dspacedb
     restart: unless-stopped
 
