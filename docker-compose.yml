@@ -12,14 +12,18 @@ services:
     container_name: dspace-nginx
     restart: unless-stopped
     ports:
-      - "80:80"
+      - "${NGINX_HOST_PORT:-80}:80"
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
     depends_on:
       - dspace
       - dspace-angular
     networks:
       - dspacenet
+
+  dspacedb:
+    ports:
+      - "${DB_HOST_PORT:-5431}:5432"
 
   dspace:
     environment:
@@ -28,6 +32,13 @@ services:
       dspace__P__server__P__ssr__P__url: http://dspace:8080/server
 
   dspace-angular:
+    image: ${DSPACE_UI_IMAGE:-dspace/dspace-angular:latest-dist}
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+      args:
+        FRONTEND_REPO: ${FRONTEND_REPO:-https://github.com/DSpace/dspace-angular.git}
+        FRONTEND_BRANCH: ${FRONTEND_BRANCH:-main}
     environment:
       DSPACE_UI_HOST: ${DSPACE_UI_HOST:-localhost}
       DSPACE_UI_PORT: ${DSPACE_UI_PORT:-80}
