@@ -8,4 +8,4 @@ LASTNAME="${3:-user}"
 PASSWORD="${4:-admin}"
 
 echo "Creating Administrator account ($EMAIL)..."
-docker compose -p d10 -f docker/docker-compose-dist.yml -f docker/docker-compose-rest.yml -f docker-compose.override.yml -f docker/cli.yml run --rm dspace-cli create-administrator -e "$EMAIL" -f "$FIRSTNAME" -l "$LASTNAME" -p "$PASSWORD" -c en
+docker compose -f docker-compose.yml -f docker/cli.yml run --rm dspace-cli create-administrator -e "$EMAIL" -f "$FIRSTNAME" -l "$LASTNAME" -p "$PASSWORD" -c en

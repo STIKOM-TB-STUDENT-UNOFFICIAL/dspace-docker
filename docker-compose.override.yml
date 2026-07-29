@@ -17,6 +17,10 @@ services:
     networks:
       - dspacenet
 
+  dspacedb:
+    ports:
+      - "${DB_HOST_PORT:-5431}:5432"
+
   dspace:
     environment:
       dspace__P__server__P__url: ${DSPACE_SERVER_URL:-http://localhost/server}

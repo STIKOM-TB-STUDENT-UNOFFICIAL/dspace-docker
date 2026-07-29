@@ -8,12 +8,12 @@ Setup repository ini dibangun sepenuhnya berdasarkan **[Dokumentasi Resmi DSpace
 
 Seluruh service menggunakan image resmi DSpace 10:
 
-| Service | Container Name | Fungsi | Akses Direct |
+| Service | Container Name | Fungsi | Akses Direct / Port Host |
 |---|---|---|---|
 | `dspace-nginx` | `dspace-nginx` | Reverse proxy utama (pintu masuk port 80) | `http://localhost` |
 | `dspace-angular` | `dspace-angular` | Frontend User Interface (Angular SSR) | `http://localhost:4000` |
 | `dspace` | `dspace` | Backend REST API | `http://localhost:8080/server` |
-| `dspacedb` | `dspacedb` | PostgreSQL 15 database | Internal network |
+| `dspacedb` | `dspacedb` | PostgreSQL 15 database | `localhost:${DB_HOST_PORT:-5431}` |
 | `dspacesolr` | `dspacesolr` | Solr 8 Search & Analytics Engine | `http://localhost:8983/solr` |
 
 ---
@@ -28,27 +28,29 @@ Dengan Nginx Reverse Proxy:
 
 ## 🚀 Cara Menjalankan DSpace 10
 
-### 1. Pull Image & Build
-Jalankan perintah resmi DSpace 10 Docker Compose:
-
+### 1. Salin `.env` (Jika belum ada)
 ```bash
-docker compose -p d10 -f docker/docker-compose-dist.yml -f docker/docker-compose-rest.yml -f docker-compose.override.yml pull
+cp .env.example .env
 ```
 
-### 2. Jalankan Stack
+### 2. Hapus folder nginx.conf lama yang terbuat otomatis (Jika muncul error mount)
+Jika sebelumnya pernah mengalami error OCI mount karena Docker membuat folder `docker/nginx.conf`, bersihkan dulu dengan:
 ```bash
-docker compose -p d10 -f docker/docker-compose-dist.yml -f docker/docker-compose-rest.yml -f docker-compose.override.yml up -d
+rm -rf docker/nginx.conf
 ```
-> Atau cukup gunakan perintah singkat:
-> ```bash
-> docker compose up -d
-> ```
 
-### 3. Cek Log Sistem / Monitoring Startup
+### 3. Pull & Jalankan Stack
+Jalankan perintah Docker Compose standar di root direktori proyek:
+
+```bash
+docker compose up -d
+```
+
+### 4. Cek Log Sistem / Monitoring Startup
 DSpace backend membutuhkan waktu 1–3 menit untuk inisialisasi database & Solr cores saat pertama kali dijalankan:
 
 ```bash
-docker compose -p d10 -f docker/docker-compose-dist.yml -f docker/docker-compose-rest.yml logs -f
+docker compose logs -f
 ```
 
 ---
@@ -83,28 +85,6 @@ Untuk menguji fitur DSpace 10 dengan data awal (komunitas, koleksi, dan item sam
 
 ---
 
-## 🔧 Pengaturan Custom Domain Produksi (`repository.univ.ac.id`)
-
-Jika ingin menyebar ke domain kampus / produksi:
-
-1. Salin file `.env.example` menjadi `.env`:
-   ```bash
-   cp .env.example .env
-   ```
-2. Edit file `.env` dan ganti `localhost` dengan domain produksi Anda:
-   ```env
-   DSPACE_SERVER_URL=http://repository.univ.ac.id/server
-   DSPACE_UI_URL=http://repository.univ.ac.id
-   DSPACE_UI_HOST=repository.univ.ac.id
-   DSPACE_REST_HOST=repository.univ.ac.id
-   ```
-3. Restart container:
-   ```bash
-   docker compose up -d
-   ```
-
----
-
 ## 🎨 Menggunakan Custom Frontend UI Repository
 
 Jika Anda menggunakan **repository Angular UI kustom** (misal hasil modifikasi tema/layout sendiri di GitHub):
@@ -118,7 +98,24 @@ Jika Anda menggunakan **repository Angular UI kustom** (misal hasil modifikasi t
    ```bash
    ./rebuild-frontend.sh
    ```
-   *Script ini akan melakukan re-clone commit terbaru dari repo custom Anda dan membangun ulang image Angular UI.*
+
+---
+
+## 🔧 Pengaturan Custom Domain Produksi (`repository.univ.ac.id`)
+
+Jika ingin menyebar ke domain kampus / produksi:
+
+1. Edit file `.env` dan ganti `localhost` dengan domain produksi Anda:
+   ```env
+   DSPACE_SERVER_URL=http://repository.univ.ac.id/server
+   DSPACE_UI_URL=http://repository.univ.ac.id
+   DSPACE_UI_HOST=repository.univ.ac.id
+   DSPACE_REST_HOST=repository.univ.ac.id
+   ```
+2. Restart container:
+   ```bash
+   docker compose up -d
+   ```
 
 ---
 
@@ -145,10 +142,10 @@ Mengembalikan data dari folder backup:
 
 Untuk menghentikan container sementara:
 ```bash
-docker compose -p d10 -f docker/docker-compose-dist.yml -f docker/docker-compose-rest.yml -f docker-compose.override.yml down
+docker compose down
 ```
 
 Untuk menghentikan dan **menghapus seluruh volume data** (reset bersih):
 ```bash
-docker compose -p d10 -f docker/docker-compose-dist.yml -f docker/docker-compose-rest.yml -f docker-compose.override.yml down -v
+docker compose down -v
 ```
