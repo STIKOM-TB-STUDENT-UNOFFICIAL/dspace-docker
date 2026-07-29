@@ -21,7 +21,40 @@ DSpace menggunakan struktur hierarki untuk mengorganisir dokumen institusi/kampu
 
 ---
 
-## 🖥️ 2. Panduan Operasional Server (Perintah CLI)
+## 📧 2. Konfigurasi SMTP Email (`.env`)
+
+DSpace menggunakan variabel di file `.env` untuk mengatur pengiriman email, notifikasi registrasi, reset password, dan persetujuan workflow.
+
+### Cara Mengatur SMTP via `.env`:
+1. Buka file `.env` di direktori proyek (`nano .env` atau `code .env`).
+2. Sesuaikan opsi email berikut:
+
+```env
+# Set ke false HANYA JIKA username & password SMTP sudah diisi
+SMTP_DISABLED=false
+
+# Host & Port SMTP (Contoh Gmail):
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=emailanda@gmail.com
+SMTP_PASS=password_atau_app_password_anda
+
+# Header Email Pengirim & Administrator
+SMTP_FROM_ADDRESS=noreply@repository.stikomtunasbangsa.ac.id
+SMTP_FEEDBACK_RECIPIENT=admin@repository.stikomtunasbangsa.ac.id
+SMTP_ADMIN_EMAIL=admin@repository.stikomtunasbangsa.ac.id
+```
+
+> 💡 **Catatan untuk Gmail**: Jika menggunakan Gmail, Anda **wajib** menggunakan **Google App Password 16 Karakter** (dibuat di *Google Account -> Security -> 2-Step Verification -> App Passwords*).
+
+3. Simpan file `.env` lalu terapkan perubahan dengan:
+   ```bash
+   docker compose up -d
+   ```
+
+---
+
+## 🖥️ 3. Panduan Operasional Server (Perintah CLI)
 
 Semua perintah dijalankan di terminal server pada direktori `dspace-docker`:
 
@@ -62,7 +95,7 @@ Untuk mengisi repositori dengan contoh Komunitas, Koleksi, dan Dokumentasi tes:
 
 ## 🌐 3. Panduan Penggunaan Administrator di Web UI
 
-Akses URL Repositori: **`https://repository.azumidev.web.id/`**
+Akses URL Repositori: **`https://repository.stikomtunasbangsa.ac.id/`**
 
 ### 🔑 A. Pertama Kali Login (End User Agreement)
 1. Klik **Log In** di pojok kanan atas UI.

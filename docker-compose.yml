@@ -28,11 +28,9 @@ services:
       dspace__P__mail__P__server__P__username: ${SMTP_USER:-}
       dspace__P__mail__P__server__P__password: ${SMTP_PASS:-}
       dspace__P__mail__P__server__P__disabled: ${SMTP_DISABLED:-true}
-      dspace__P__mail__P__from__P__address: ${SMTP_FROM_ADDRESS:-noreply@repository.azumidev.web.id}
-      dspace__P__mail__P__feedback__P__recipient: ${SMTP_FEEDBACK_RECIPIENT:-admin@repository.azumidev.web.id}
-      dspace__P__mail__P__admin: ${SMTP_ADMIN_EMAIL:-admin@repository.azumidev.web.id}
-    volumes:
-      - ./config/local.cfg:/dspace/config/local.cfg
+      dspace__P__mail__P__from__P__address: ${SMTP_FROM_ADDRESS:-noreply@repository.stikomtunasbangsa.ac.id}
+      dspace__P__mail__P__feedback__P__recipient: ${SMTP_FEEDBACK_RECIPIENT:-admin@repository.stikomtunasbangsa.ac.id}
+      dspace__P__mail__P__admin: ${SMTP_ADMIN_EMAIL:-admin@repository.stikomtunasbangsa.ac.id}
 
   dspace-angular:
     image: ${DSPACE_UI_IMAGE:-dspace/dspace-angular:latest-dist}
