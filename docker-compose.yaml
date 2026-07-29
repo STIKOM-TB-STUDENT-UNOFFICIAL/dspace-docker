@@ -2,7 +2,7 @@ version: "3.9"
 
 services:
   dspacedb:
-    image: dspace/dspace-postgres-pgcrypto:dspace-latest
+    image: dspace/dspace-postgres-pgcrypto:dspace-9_x
     container_name: dspacedb
     restart: unless-stopped
 
@@ -28,7 +28,7 @@ services:
       - dspacenet
 
   dspacesolr:
-    image: dspace/dspace-solr:dspace-9.3
+    image: dspace/dspace-solr:dspace-9_x
     container_name: dspacesolr
     restart: unless-stopped
 
