@@ -45,19 +45,46 @@ services:
     restart: unless-stopped
     depends_on:
       warp:
-        condition: service_healthy
+        condition: service_started
     environment:
       dspace__P__server__P__url: ${DSPACE_SERVER_URL:-http://localhost/server}
       dspace__P__ui__P__url: ${DSPACE_UI_URL:-http://localhost}
       dspace__P__server__P__ssr__P__url: http://dspace:8080/server
       proxies__P__trusted__P__ipranges: ${PROXIES_TRUSTED_IPRANGES:-172.23.0}
-      # SMTP via WARP SOCKS5 proxy (wireproxy userspace - tidak butuh TUN)
-      JAVA_OPTS: >-
-        -DsocksProxyHost=warp
-        -DsocksProxyPort=1080
-        -DsocksNonProxyHosts=dspacedb|dspacesolr|dspace-angular|localhost|127.*|172.*
+      # CATATAN: JAVA_OPTS SOCKS proxy dihapus karena merusak koneksi DB/Solr.
+      # SMTP sekarang diproxy oleh smtp-relay sidecar.
     volumes:
       - ./config/local.cfg:/dspace/config/local.cfg:ro
+
+  # ─────────────────────────────────────────────────────────────
+  # smtp-relay: msmtp daemon - menerima SMTP di port 25 (lokal)
+  # dan meneruskan ke Gmail via WARP SOCKS5 proxy (port 443/bypass)
+  # DSpace connect ke smtp-relay:25, tidak perlu JAVA_OPTS SOCKS.
+  # ─────────────────────────────────────────────────────────────
+  smtp-relay:
+    build:
+      context: .
+      dockerfile: Dockerfile.smtp-relay
+    container_name: dspace-smtp-relay
+    restart: unless-stopped
+    depends_on:
+      warp:
+        condition: service_started
+    environment:
+      # Kredensial Gmail - edit sesuai akun Anda
+      SMTP_USER: ${SMTP_USER:-emailanda@gmail.com}
+      SMTP_PASS: ${SMTP_PASS:-xxxx-xxxx-xxxx-xxxx}
+      SMTP_FROM: ${SMTP_FROM:-noreply@repository.stikomtunasbangsa.ac.id}
+      SMTP_HOST: smtp.gmail.com
+      SMTP_PORT: "587"
+    networks:
+      - dspacenet
+    healthcheck:
+      test: ["CMD", "nc", "-z", "127.0.0.1", "25"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
 
   dspace-angular:
     restart: unless-stopped

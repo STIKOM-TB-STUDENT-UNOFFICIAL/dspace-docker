@@ -1,0 +1,29 @@
+# =============================================================
+# Dockerfile.smtp-relay
+# SMTP relay sederhana: menerima email di port 25 (lokal Docker)
+# dan meneruskan ke smtp.gmail.com via WARP SOCKS5 proxy.
+#
+# Stack: msmtp (MTA ringan) + proxychains-ng (SOCKS5 wrapper)
+#        + python smtpd (SMTP server lokal sederhana)
+# =============================================================
+FROM debian:bookworm-slim
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    msmtp \
+    proxychains-ng \
+    python3 \
+    netcat-openbsd \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# ── Copy konfigurasi ──────────────────────────────────────────
+COPY docker/smtp-relay/proxychains.conf /etc/proxychains4.conf
+COPY docker/smtp-relay/msmtp.conf       /etc/msmtprc
+COPY docker/smtp-relay/entrypoint.sh    /entrypoint.sh
+
+RUN chmod +x /entrypoint.sh \
+    && chmod 600 /etc/msmtprc
+
+EXPOSE 25
+
+ENTRYPOINT ["/entrypoint.sh"]

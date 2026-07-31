@@ -1,52 +1,34 @@
 # ====================================================================
 # DSpace 10 Local Configuration (local.cfg)
 # ====================================================================
-# File ini di-mount ke /dspace/config/local.cfg di dalam container.
-# Semua opsi di sini akan menimpa (override) konfigurasi bawaan DSpace.
-# Mount path di docker-compose.yml: ./config/local.cfg
-
-# --------------------------------------------------------------------
-# Server URLs & Domain Configuration
-# --------------------------------------------------------------------
-# WAJIB diisi sesuai domain publik! Jika salah, semua link REST API
-# akan menggunakan protokol/domain yang salah -> Mixed Content Error.
 dspace.server.url = https://repository.stikomtunasbangsa.ac.id/server
 dspace.ui.url = https://repository.stikomtunasbangsa.ac.id
-
-# Nama repositori - muncul di title halaman UI, email, dan halaman About.
 dspace.name = Repositori Institusi STIKOM Tunas Bangsa
 
 # --------------------------------------------------------------------
 # Mail / SMTP Configuration
 # --------------------------------------------------------------------
-# CATATAN: Traffic SMTP dirutekan lewat Cloudflare WARP (SOCKS5 proxy)
-# melalui JAVA_OPTS di docker-compose.yml agar bypass blokir ISP.
+# ARSITEKTUR:
+#   DSpace → smtp-relay:25 (container lokal, tidak ada blokir ISP)
+#   smtp-relay → proxychains4 → WARP SOCKS5 → smtp.gmail.com:587
 #
-# Set ke `false` untuk MENGAKTIFKAN pengiriman email
+# DSpace TIDAK perlu tahu tentang WARP atau proxy.
+# Kredensial Gmail dikonfigurasi di smtp-relay (docker-compose.yml env).
+
 mail.server.disabled = false
 
-# Host server SMTP
-mail.server = smtp.gmail.com
+# Arahkan ke smtp-relay container (bukan langsung ke Gmail)
+mail.server = smtp-relay
+mail.server.port = 25
 
-# Port SMTP (587 untuk STARTTLS - direkomendasikan untuk Gmail)
-mail.server.port = 587
+# Kosongkan username/password karena smtp-relay tidak pakai auth
+# (auth dilakukan oleh msmtp ke Gmail di belakang layar)
+mail.server.username =
+mail.server.password =
 
-# Username / Alamat Email pengirim SMTP (Gmail)
-mail.server.username = emailanda@gmail.com
-
-# Password / App Password SMTP
-# PENTING: Gunakan Google App Password (bukan password akun biasa)
-# Buat di: https://myaccount.google.com/apppasswords
-mail.server.password = xxxx xxxx xxxx xxxx
-
-# Header "From:" pada email yang dikirim
 mail.from.address = noreply@repository.stikomtunasbangsa.ac.id
-
-# Penerima email masukan (Feedback Form)
 mail.feedback.recipient = admin@repository.stikomtunasbangsa.ac.id
-
-# Email Administrator DSpace
 mail.admin = admin@repository.stikomtunasbangsa.ac.id
 
-# Opsi Tambahan JavaMail - wajib untuk Gmail dengan STARTTLS
-mail.extraproperties = mail.smtp.auth=true, mail.smtp.starttls.enable=true
+# Tidak perlu STARTTLS/SSL karena koneksi ke relay adalah lokal (port 25)
+# mail.extraproperties =
