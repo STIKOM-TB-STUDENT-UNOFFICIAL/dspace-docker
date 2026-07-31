@@ -4,7 +4,10 @@ include:
 
 services:
   warp:
-    image: caomingjie/cloudflare-warp:latest
+    build:
+      context: .
+      dockerfile: Dockerfile.warp
+    image: dspace-warp:local
     container_name: dspace-warp
     restart: unless-stopped
     cap_add:
@@ -18,9 +21,9 @@ services:
     healthcheck:
       test: ["CMD", "curl", "-sx", "socks5h://localhost:1080", "https://cloudflare.com/cdn-cgi/trace"]
       interval: 30s
-      timeout: 15s
+      timeout: 20s
       retries: 5
-      start_period: 30s
+      start_period: 60s
 
   nginx:
     image: nginx:alpine
