@@ -12,6 +12,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     gnupg \
     iproute2 \
     socat \
+    netcat-openbsd \
     && rm -rf /var/lib/apt/lists/*
 
 # ── 2. Tambah repo resmi Cloudflare WARP dan install warp-cli ─

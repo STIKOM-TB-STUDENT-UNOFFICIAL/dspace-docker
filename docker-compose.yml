@@ -4,28 +4,22 @@ include:
 
 services:
   warp:
-    build:
-      context: .
-      dockerfile: Dockerfile.warp
-    image: dspace-warp:local
+    image: ghcr.io/kingcc/warproxy:latest
     container_name: dspace-warp
     restart: unless-stopped
-    cap_add:
-      - NET_ADMIN       # dibutuhkan warp-svc, tidak butuh TUN di proxy mode
-    sysctls:
-      - net.ipv6.conf.all.disable_ipv6=0
+    environment:
+      - SOCKS5_PORT=1080
+      - WARP_PLUS=false
     volumes:
-      - warp-data:/var/lib/cloudflare-warp
+      - warp-data:/config   # simpan wgcf-account.toml agar tidak daftar ulang
     networks:
       - dspacenet
     healthcheck:
-      # Cek socat relay aktif + WARP proxy bisa routing ke internet
       test: ["CMD", "curl", "-sx", "socks5h://127.0.0.1:1080", "--max-time", "15", "https://cloudflare.com/cdn-cgi/trace"]
       interval: 30s
       timeout: 20s
       retries: 5
-      start_period: 90s
-
+      start_period: 60s
 
   nginx:
     image: nginx:alpine
@@ -57,7 +51,7 @@ services:
       dspace__P__ui__P__url: ${DSPACE_UI_URL:-http://localhost}
       dspace__P__server__P__ssr__P__url: http://dspace:8080/server
       proxies__P__trusted__P__ipranges: ${PROXIES_TRUSTED_IPRANGES:-172.23.0}
-
+      # SMTP via WARP SOCKS5 proxy (wireproxy userspace - tidak butuh TUN)
       JAVA_OPTS: >-
         -DsocksProxyHost=warp
         -DsocksProxyPort=1080
@@ -89,3 +83,4 @@ services:
 volumes:
   warp-data:
     name: dspace-warp-data
+
