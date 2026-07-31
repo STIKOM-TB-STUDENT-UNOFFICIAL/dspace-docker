@@ -3,6 +3,25 @@ include:
   - docker/docker-compose-rest.yml
 
 services:
+  warp:
+    image: caomingjie/cloudflare-warp:latest
+    container_name: dspace-warp
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
+    sysctls:
+      - net.ipv6.conf.all.disable_ipv6=0
+    volumes:
+      - warp-data:/var/lib/cloudflare-warp
+    networks:
+      - dspacenet
+    healthcheck:
+      test: ["CMD", "curl", "-sx", "socks5h://localhost:1080", "https://cloudflare.com/cdn-cgi/trace"]
+      interval: 30s
+      timeout: 15s
+      retries: 5
+      start_period: 30s
+
   nginx:
     image: nginx:alpine
     container_name: dspace-nginx
@@ -25,11 +44,19 @@ services:
 
   dspace:
     restart: unless-stopped
+    depends_on:
+      warp:
+        condition: service_healthy
     environment:
       dspace__P__server__P__url: ${DSPACE_SERVER_URL:-http://localhost/server}
       dspace__P__ui__P__url: ${DSPACE_UI_URL:-http://localhost}
       dspace__P__server__P__ssr__P__url: http://dspace:8080/server
       proxies__P__trusted__P__ipranges: ${PROXIES_TRUSTED_IPRANGES:-172.23.0}
+
+      JAVA_OPTS: >-
+        -DsocksProxyHost=warp
+        -DsocksProxyPort=1080
+        -DsocksNonProxyHosts=dspacedb|dspacesolr|dspace-angular|localhost|127.*|172.*
     volumes:
       - ./config/local.cfg:/dspace/config/local.cfg:ro
 
@@ -53,3 +80,7 @@ services:
       DSPACE_REST_PORT: ${DSPACE_REST_PORT:-443}
       DSPACE_REST_NAMESPACE: /server
       DSPACE_REST_SSRBASEURL: http://dspace:8080/server
+
+volumes:
+  warp-data:
+    name: dspace-warp-data

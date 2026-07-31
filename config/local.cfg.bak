@@ -14,26 +14,30 @@ dspace.server.url = https://repository.stikomtunasbangsa.ac.id/server
 dspace.ui.url = https://repository.stikomtunasbangsa.ac.id
 
 # Nama repositori - muncul di title halaman UI, email, dan halaman About.
-# Ganti sesuai nama institusi Anda.
 dspace.name = Repositori Institusi STIKOM Tunas Bangsa
 
 # --------------------------------------------------------------------
 # Mail / SMTP Configuration
 # --------------------------------------------------------------------
-# Set ke `false` untuk mengaktifkan pengiriman email
-mail.server.disabled = true
+# CATATAN: Traffic SMTP dirutekan lewat Cloudflare WARP (SOCKS5 proxy)
+# melalui JAVA_OPTS di docker-compose.yml agar bypass blokir ISP.
+#
+# Set ke `false` untuk MENGAKTIFKAN pengiriman email
+mail.server.disabled = false
 
-# Host server SMTP (Contoh: smtp.gmail.com)
+# Host server SMTP
 mail.server = smtp.gmail.com
 
-# Port SMTP (587 untuk TLS/STARTTLS, 465 untuk SSL, 25 untuk non-encrypted)
+# Port SMTP (587 untuk STARTTLS - direkomendasikan untuk Gmail)
 mail.server.port = 587
 
-# Username / Alamat Email pengirim SMTP
+# Username / Alamat Email pengirim SMTP (Gmail)
 mail.server.username = emailanda@gmail.com
 
-# Password / App Password SMTP (Gunakan Google App Password jika menggunakan Gmail)
-mail.server.password = password_atau_app_password_anda
+# Password / App Password SMTP
+# PENTING: Gunakan Google App Password (bukan password akun biasa)
+# Buat di: https://myaccount.google.com/apppasswords
+mail.server.password = xxxx xxxx xxxx xxxx
 
 # Header "From:" pada email yang dikirim
 mail.from.address = noreply@repository.stikomtunasbangsa.ac.id
@@ -44,5 +48,5 @@ mail.feedback.recipient = admin@repository.stikomtunasbangsa.ac.id
 # Email Administrator DSpace
 mail.admin = admin@repository.stikomtunasbangsa.ac.id
 
-# Opsi Tambahan JavaMail
-# mail.extraproperties = mail.smtp.auth=true, mail.smtp.starttls.enable=true
+# Opsi Tambahan JavaMail - wajib untuk Gmail dengan STARTTLS
+mail.extraproperties = mail.smtp.auth=true, mail.smtp.starttls.enable=true
