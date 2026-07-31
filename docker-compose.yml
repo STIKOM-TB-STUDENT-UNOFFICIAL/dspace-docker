@@ -11,22 +11,21 @@ services:
     container_name: dspace-warp
     restart: unless-stopped
     cap_add:
-      - NET_ADMIN
-      - SYS_ADMIN
+      - NET_ADMIN       # dibutuhkan warp-svc, tidak butuh TUN di proxy mode
     sysctls:
       - net.ipv6.conf.all.disable_ipv6=0
-    devices:
-      - /dev/net/tun:/dev/net/tun
     volumes:
       - warp-data:/var/lib/cloudflare-warp
     networks:
       - dspacenet
     healthcheck:
-      test: ["CMD", "curl", "-sx", "socks5h://localhost:1080", "--max-time", "10", "https://cloudflare.com/cdn-cgi/trace"]
+      # Cek socat relay aktif + WARP proxy bisa routing ke internet
+      test: ["CMD", "curl", "-sx", "socks5h://127.0.0.1:1080", "--max-time", "15", "https://cloudflare.com/cdn-cgi/trace"]
       interval: 30s
       timeout: 20s
       retries: 5
       start_period: 90s
+
 
   nginx:
     image: nginx:alpine

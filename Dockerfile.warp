@@ -1,7 +1,7 @@
 # =============================================================
 # Dockerfile.warp
-# Membangun image Cloudflare WARP dengan SOCKS5 proxy (microsocks)
-# menggunakan paket resmi dari repo APT Cloudflare.
+# Cloudflare WARP dalam proxy mode (TIDAK butuh /dev/net/tun).
+# socat merelay 0.0.0.0:1080 → 127.0.0.1:40000 (warp-svc SOCKS5)
 # =============================================================
 FROM debian:bookworm-slim
 
@@ -11,10 +11,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     gnupg \
     iproute2 \
-    iptables \
-    iputils-ping \
-    build-essential \
-    git \
+    socat \
     && rm -rf /var/lib/apt/lists/*
 
 # ── 2. Tambah repo resmi Cloudflare WARP dan install warp-cli ─
@@ -27,20 +24,14 @@ RUN curl -fsSL https://pkg.cloudflareclient.com/pubkey.gpg \
       cloudflare-warp \
     && rm -rf /var/lib/apt/lists/*
 
-# ── 3. Build microsocks (SOCKS5 proxy ringan, ~10KB) ──────────
-RUN git clone --depth=1 https://github.com/rofl0r/microsocks.git /tmp/microsocks \
-    && make -C /tmp/microsocks \
-    && cp /tmp/microsocks/microsocks /usr/local/bin/microsocks \
-    && rm -rf /tmp/microsocks
-
-# ── 4. Copy entrypoint ────────────────────────────────────────
+# ── 3. Copy entrypoint ────────────────────────────────────────
 COPY docker/warp-entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
-# ── 5. Direktori data WARP ────────────────────────────────────
+# ── 4. Direktori data WARP ────────────────────────────────────
 VOLUME ["/var/lib/cloudflare-warp"]
 
-# SOCKS5 proxy port
+# Port relay socat (expose warp-svc ke docker network)
 EXPOSE 1080
 
 ENTRYPOINT ["/entrypoint.sh"]
