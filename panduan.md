@@ -158,3 +158,73 @@ Akses URL Repositori: **`https://repository.stikomtunasbangsa.ac.id/`**
 | **Persetujuan Agreement Tidak Bisa Disimpan** | Cache browser atau Mixed Content SSL | Buka mode *Incognito*, lalu centang dan tekan **Save**. |
 | **Port Nginx / Database Bentrok** | Port 80 atau 5432 sudah terpakai service lain di server | Edit file `.env`, ubah `NGINX_HOST_PORT=8081` atau `DB_HOST_PORT=5431`, lalu `docker compose up -d`. |
 | **Halaman Putih Saat Refresh Sub-rute** | Cache Nginx belum me-reload rute Angular | Jalankan `./restart.sh` di server Linux. |
+| **403 Forbidden saat Tambah/Hapus di Konfigurasi** | Reverse proxy kampus tidak dipercaya DSpace | Lihat panduan lengkap di bawah. |
+
+---
+
+## 🚨 5. Fix: Error 403 di Menu Konfigurasi (Server Kampus)
+
+### Gejala
+- Login berhasil ✅
+- Browsing konten berhasil ✅
+- Operasi **Tambah / Hapus / Edit** di menu konfigurasi **GAGAL dengan 403** ❌
+- Refresh halaman menampilkan **403 Forbidden** ❌
+
+### Penyebab
+Saat di-deploy di server kampus, biasanya ada **reverse proxy eksternal** (Nginx/Apache kampus atau Cloudflare) di depan container Docker.
+
+DSpace backend hanya mempercayai request dari IP range tertentu (`proxies.trusted.ipranges`). Request `POST`/`DELETE` (operasi tulis) dari IP reverse proxy kampus dianggap **tidak trusted** → **403 Forbidden**.
+
+### Langkah Perbaikan
+
+#### Langkah 1: Cari tahu IP subnet Docker gateway di server kampus
+
+SSH ke server kampus, lalu jalankan:
+
+```bash
+# Cek IP bridge Docker yang dipakai container dspace
+docker network inspect $(docker network ls | grep dspacenet | awk '{print $1}') | grep -E '"Subnet"|"Gateway"'
+```
+
+> Contoh output:
+> ```
+> "Subnet": "172.23.0.0/16",
+> "Gateway": "172.23.0.1"
+> ```
+
+```bash
+# Cek IP server host (IP yang digunakan oleh Nginx kampus)
+hostname -I
+```
+
+#### Langkah 2: Edit file `.env` di server kampus
+
+Tambahkan/ubah variabel `PROXIES_TRUSTED_IPRANGES`:
+
+```env
+# Tambahkan semua IP range yang relevan, pisahkan dengan koma
+# Format: 3 oktet pertama dari IP (tanpa .0 di akhir)
+# Contoh di bawah: Docker subnet + IP privat server kampus
+PROXIES_TRUSTED_IPRANGES=172.23.0,10.0.0,192.168.1
+```
+
+> **Catatan**:
+> - `172.23.0` = subnet internal Docker (wajib ada)
+> - `10.0.0` atau `192.168.1` = IP internal server kampus (sesuaikan!)
+> - Jangan gunakan `0.0.0.0` — terlalu luas dan tidak aman
+
+#### Langkah 3: Restart container
+
+```bash
+docker compose up -d
+```
+
+#### Langkah 4: Verifikasi
+
+Buka browser, login sebagai Admin, coba Tambah/Hapus di menu konfigurasi. Jika masih 403, cek log backend:
+
+```bash
+docker logs dspace --tail=50 | grep -i "403\|forbidden\|proxy\|trusted"
+```
+
+---

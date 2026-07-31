@@ -29,6 +29,7 @@ services:
       dspace__P__server__P__url: ${DSPACE_SERVER_URL:-http://localhost/server}
       dspace__P__ui__P__url: ${DSPACE_UI_URL:-http://localhost}
       dspace__P__server__P__ssr__P__url: http://dspace:8080/server
+      proxies__P__trusted__P__ipranges: ${PROXIES_TRUSTED_IPRANGES:-172.23.0}
     volumes:
       - ./config/local.cfg:/dspace/config/local.cfg:ro
 
